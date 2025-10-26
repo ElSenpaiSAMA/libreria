@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import BookGrid from '@/components/BookGrid';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -8,7 +8,7 @@ import { Sparkles, SlidersHorizontal, Search as SearchIcon } from 'lucide-react'
 import { fetchNewBooks, searchBooks, fetchBooksByCategory } from '@/lib/open-library-api';
 import type { Book } from '@/types';
 
-export default function NovedadesPage() {
+function NovedadesContent() {
   const searchParams = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchQuery, setSearchQuery] = useState('');
@@ -143,6 +143,18 @@ export default function NovedadesPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function NovedadesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-stone-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-700"></div>
+      </div>
+    }>
+      <NovedadesContent />
+    </Suspense>
   );
 }
 

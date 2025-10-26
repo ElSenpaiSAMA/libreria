@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import BookGrid from '@/components/BookGrid';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -17,7 +17,7 @@ function removeDuplicateBooks(books: Book[]): Book[] {
   });
 }
 
-export default function ColeccionPage() {
+function ColeccionContent() {
   const searchParams = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchQuery, setSearchQuery] = useState('');
@@ -154,6 +154,18 @@ export default function ColeccionPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function ColeccionPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-stone-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-700"></div>
+      </div>
+    }>
+      <ColeccionContent />
+    </Suspense>
   );
 }
 
