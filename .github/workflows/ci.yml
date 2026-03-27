@@ -1,4 +1,4 @@
-name: Libreria
+name: CI
 
 on:
   push:
@@ -6,14 +6,23 @@ on:
   pull_request:
 
 jobs:
-  cypress:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies (Linux)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Linux dependencies for Cypress
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -26,8 +35,14 @@ jobs:
             xauth \
             xvfb
 
-      - name: Install npm dependencies
-        run: npm ci
+      - name: Build project
+        run: npm run build
 
-      - name: Run Cypress
+      - name: Start server
+        run: npm start &
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000
+
+      - name: Run Cypress tests
         run: npx cypress run
